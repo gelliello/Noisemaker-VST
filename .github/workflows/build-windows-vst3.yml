@@ -46,10 +46,9 @@ jobs:
             throw "Noisemaker.vst3 bundle folder was not found after build."
           }
           Copy-Item -Path $bundle.FullName -Destination artifacts -Recurse
-          Compress-Archive -Path artifacts/Noisemaker.vst3 -DestinationPath artifacts/Noisemaker-Windows-VST3.zip -Force
 
       - name: Upload VST3
         uses: actions/upload-artifact@v4
         with:
           name: Noisemaker-Windows-VST3
-          path: artifacts/Noisemaker-Windows-VST3.zip
+          path: artifacts
