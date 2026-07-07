@@ -41,14 +41,15 @@ jobs:
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path artifacts | Out-Null
-          $vst3 = Get-ChildItem -Path build -Recurse -Filter "Noisemaker.vst3" | Select-Object -First 1
-          if (-not $vst3) {
-            throw "Noisemaker.vst3 was not found after build."
+          $bundle = Get-ChildItem -Path build -Recurse -Directory -Filter "Noisemaker.vst3" | Select-Object -First 1
+          if (-not $bundle) {
+            throw "Noisemaker.vst3 bundle folder was not found after build."
           }
-          Copy-Item -Path $vst3.FullName -Destination artifacts -Recurse
+          Copy-Item -Path $bundle.FullName -Destination artifacts -Recurse
+          Compress-Archive -Path artifacts/Noisemaker.vst3 -DestinationPath artifacts/Noisemaker-Windows-VST3.zip -Force
 
       - name: Upload VST3
         uses: actions/upload-artifact@v4
         with:
           name: Noisemaker-Windows-VST3
-          path: artifacts/Noisemaker.vst3
+          path: artifacts/Noisemaker-Windows-VST3.zip
