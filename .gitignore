@@ -1,0 +1,10 @@
+build/
+Builds/
+.vs/
+.vscode/
+*.user
+*.suo
+*.vcxproj*
+*.sln
+*.log
+JUCE/

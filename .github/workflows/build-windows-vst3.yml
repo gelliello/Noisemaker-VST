@@ -1,0 +1,40 @@
+name: Build Windows VST3
+
+on:
+  push:
+    branches:
+      - "**"
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Noisemaker VST3
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure
+        shell: pwsh
+        run: cmake -S . -B build -G "Visual Studio 17 2022" -A x64
+
+      - name: Build
+        shell: pwsh
+        run: cmake --build build --config Release --parallel
+
+      - name: Collect VST3
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path artifacts | Out-Null
+          $vst3 = Get-ChildItem -Path build -Recurse -Filter "Noisemaker.vst3" | Select-Object -First 1
+          if (-not $vst3) {
+            throw "Noisemaker.vst3 was not found after build."
+          }
+          Copy-Item -Path $vst3.FullName -Destination artifacts -Recurse
+
+      - name: Upload VST3
+        uses: actions/upload-artifact@v4
+        with:
+          name: Noisemaker-Windows-VST3
+          path: artifacts/Noisemaker.vst3
