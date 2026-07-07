@@ -142,8 +142,10 @@ std::shared_ptr<LoadedSample> SampleLoader::loadFile (const juce::File& file, ju
     }
 
     auto loaded = std::make_shared<LoadedSample>();
-    loaded->audio.setSize ((int) juce::jmin<uint32> (reader->numChannels, 2),
-                           (int) juce::jmin<int64> (reader->lengthInSamples, (int64) reader->sampleRate * 300));
+    const auto channelsToRead = juce::jmin ((int) reader->numChannels, 2);
+    const auto maximumSamples = (int64_t) std::round (reader->sampleRate * 300.0);
+    const auto samplesToRead = (int) juce::jmin ((int64_t) reader->lengthInSamples, maximumSamples);
+    loaded->audio.setSize (channelsToRead, samplesToRead);
     reader->read (&loaded->audio, 0, loaded->audio.getNumSamples(), 0, true, true);
 
     removeLeadingSilence (loaded->audio);
